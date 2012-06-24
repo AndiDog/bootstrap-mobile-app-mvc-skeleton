@@ -43,10 +43,11 @@ languages that would be used here.
 * `app/assets` contains images / static files. Contents of the directory would
 be copied to `build/` without change.
 Other `app/` directories could contain files that would be compiled. Languages,
-that compile to JS (coffeescript, roy etc.) or js files and located in app are 
-automatically wrapped in module closure so they can be loaded by 
+that compile to JS (coffeescript, roy etc.) or js files and located in app are
+automatically wrapped in module closure so they can be loaded by
 `require('module/location')`.
 * `app/models` & `app/views` contain base classes your app should inherit from.
+* `app/controllers` contains example controllers using Backbone's hashbang routing
 * `test/` contains feature & unit tests.
 * `vendor/` contains all third-party code. The code wouldn’t be wrapped in
 modules, it would be loaded instantly instead.
