@@ -1,6 +1,6 @@
 View = require './view'
-template = require './templates/home'
+template = require './templates/some'
 
 module.exports = class HomeView extends View
-  id: 'home-view'
+  id: 'some-view'
   template: template
