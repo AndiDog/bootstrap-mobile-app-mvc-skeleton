@@ -1,6 +1,5 @@
 Controller = require './controller'
 mediator = require 'mediator'
-SomeModel = require 'models/some_model'
 SomeView = require 'views/some_view'
 
 module.exports = class SomeController extends Controller
@@ -9,8 +8,7 @@ module.exports = class SomeController extends Controller
 
   initialize: ->
     super
-    @model = new SomeModel()
-    @view = new SomeView({@model})
+    @view = new SomeView()
 
     # The view of this controller may redirect to AnotherController, so we have to initialize that one in order to set
     # up the (Backbone) routes. This is lazy loading, but all requireController calls could as well be placed in
@@ -18,4 +16,4 @@ module.exports = class SomeController extends Controller
     mediator.requireController('controllers/another_controller')
 
   some: ->
-    $('body').html @view.render().el
+    @render('some', @view, {reverse: @getCurrentPageId() is 'another'})

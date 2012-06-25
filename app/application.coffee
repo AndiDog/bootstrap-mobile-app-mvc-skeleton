@@ -3,12 +3,7 @@
 # The application bootstrapper.
 Application =
   initialize: ->
-    Router = require 'lib/router'
-
     @initControllers()
-
-    # Instantiate the default router
-    @router = new Router()
 
     # Freeze the object
     Object.freeze? this
@@ -24,6 +19,7 @@ Application =
     # This instantiates the example controller containing the home page. That's necessary because the default route
     # redirects to that controller.
     mediator = require 'mediator'
+    mediator.requireController('controllers/home_controller')
     mediator.requireController('controllers/some_controller')
 
 module.exports = Application

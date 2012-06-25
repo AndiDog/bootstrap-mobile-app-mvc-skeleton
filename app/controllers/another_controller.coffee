@@ -1,4 +1,5 @@
 Controller = require './controller'
+AnotherView = require 'views/another_view'
 
 module.exports = class AnotherController extends Controller
   routes:
@@ -6,7 +7,7 @@ module.exports = class AnotherController extends Controller
 
   initialize: ->
     super
-    # Create views and stuff here...
+    @view = new AnotherView()
 
   index: ->
-    $('body').html 'Alright, so this is rendered from another controller.'
+    @render('another', @view)
