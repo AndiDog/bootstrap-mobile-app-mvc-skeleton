@@ -1,5 +1,5 @@
-# Brunch with coffee
-This is a simple coffee skeleton for [Brunch](http://brunch.io/).
+# Brunch with CoffeeScript, jQuery Mobile, Backbone, Handlebars and Stylus, using the MVC pattern
+This is a skeleton for [Brunch](http://brunch.io/) based on the work of Paul Millr ([simple-coffee-skeleton](https://github.com/brunch/simple-coffee-skeleton)).
 
 Main languages are [CoffeeScript](http://coffeescript.org/),
 [Stylus](http://learnboost.github.com/stylus/) and
@@ -7,8 +7,10 @@ Main languages are [CoffeeScript](http://coffeescript.org/),
 
 ## Getting started
 
-Clone the repo and run `npm install` & `brunch build`.
-See more info on the [official site](http://brunch.io)
+Clone this repo or download the ZIP file (you won't need the history). Then run `npm install` in that directory, followed by `brunch build` (or `brunch w -s` for automatic rebuilding on changes and Brunch's integrated web server). See more info on the [official site of Brunch](http://brunch.io).
+
+## License
+[Public domain](http://creativecommons.org/publicdomain/zero/1.0/) – use it however you want.
 
 ## Overview
 
@@ -60,7 +62,4 @@ Versions of software the skeleton uses:
 * jQuery 1.7.2
 * Backbone 0.9.2
 * Underscore 1.3.3
-* HTML5Boilerplate 3.0.3
-
-The license is [public domain](http://creativecommons.org/publicdomain/zero/1.0/).
-Use it however you want.
+* jQuery Mobile 1.1.0 (with default theme)
