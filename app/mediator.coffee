@@ -24,7 +24,7 @@ mediator.publish = mediator.trigger = Backbone.Events.trigger
 # (Lazy) Loading of controllers identical to the require() function
 mediator.loadedControllerInstances = {}
 mediator.requireController = (controllerRequirePath) ->
-  if controllerRequirePath in mediator.loadedControllerInstances
+  if controllerRequirePath of mediator.loadedControllerInstances
     return
 
   if not /^controllers\//.test(controllerRequirePath)
