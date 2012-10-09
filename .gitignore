@@ -20,8 +20,8 @@ nbproject
 Thumbs.db
 
 # NPM packages folder
-node_modules/
+src/node_modules/
 
 # Brunch folders for build and temporary files
-public/
-tmp/
+src/public/
+src/tmp/
