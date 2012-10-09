@@ -1,7 +1,7 @@
 crossPlatform = require('lib/cross_platform')
 
 # Base class for all views.
-module.exports = class View extends Backbone.View
+module.exports = class View
   afterRender: ->
     # Turn it into a jQM page
     # If the template already defines a JQM page, use it
@@ -96,6 +96,7 @@ module.exports = class View extends Backbone.View
                    }
                </script>"
 
+    @$el = $(document.createElement('div'))
     @$el.html(html)
     @afterRender()
     console.log "Finished rendering #{@constructor.name}"
