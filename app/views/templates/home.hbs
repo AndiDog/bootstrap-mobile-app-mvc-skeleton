@@ -1,21 +1,16 @@
-<!-- This template has a div with data-role="page" already. If it didn't, one would be created automatically by Controller.render -->
-<div data-role="page">
+<!-- No DIV with data-role="page" required. It is created automatically by View.afterRender if necessary. -->
+<!--<div data-role="page">-->
     <!--
         The data-id attribute persists the header toolbar. The same data-id is used in the "some" template, so switching
         between this and the "some" page does not animate the toolbar.
     -->
     <div data-role="header" data-position="fixed" data-id="home-header">
         <h1>
-            Home
+            Home screen
         </h1>
     </div>
 
     <div data-role="content">
-        <p>Go to:</p>
-
-        <ul data-role="listview">
-            <li><a href="#any/url">some controller</a></li>
-            <li><a href="#another">another controller</a></li>
-        </ul>
+        <p>There's nothing to see here. Here's the view data: someViewData={{ someViewData }}</p>
     </div>
-</div>
+<!--</div>-->

@@ -8,6 +8,7 @@ exports.config =
         'javascripts/vendor.js': /^vendor/
       order:
         before: [
+          'vendor/scripts/apptarget.js',
           'vendor/scripts/console-helper.js',
           'vendor/scripts/jquery-1.8.2.min.js',
           'vendor/scripts/underscore-1.3.3.js',

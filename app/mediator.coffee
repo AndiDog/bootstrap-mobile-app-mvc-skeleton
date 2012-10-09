@@ -10,29 +10,75 @@
 # application-wide mediator you might load into modules
 # which need to talk to other modules using Publish/Subscribe.
 
-mediator = {}
+class Mediator
+  subscribe: Backbone.Events.on
+  unsubscribe: Backbone.Events.off
+  trigger: Backbone.Events.trigger
 
-# Publish / Subscribe
-# -------------------
+  # (Lazy) Loading of controllers identical to the require() function
+  loadedControllerInstances: {}
+  requireController: (controllerRequirePath) ->
+    if controllerRequirePath of @loadedControllerInstances
+      return @loadedControllerInstances[controllerRequirePath]
 
-# Mixin event methods from Backbone.Events,
-# create Publish/Subscribe aliases
-mediator.subscribe = Backbone.Events.on
-mediator.unsubscribe = Backbone.Events.off
-mediator.publish = mediator.trigger = Backbone.Events.trigger
+    if not /^controllers\//.test(controllerRequirePath)
+      throw 'Use mediator.requireController() as you would use require()'
 
-# (Lazy) Loading of controllers identical to the require() function
-mediator.loadedControllerInstances = {}
-mediator.requireController = (controllerRequirePath) ->
-  if controllerRequirePath of mediator.loadedControllerInstances
-    return
+    instance = new (require(controllerRequirePath))()
+    @loadedControllerInstances[controllerRequirePath] = instance
 
-  if not /^controllers\//.test(controllerRequirePath)
-    throw 'Use mediator.requireController() as you would use require()'
+    return instance
 
-  instance = new (require(controllerRequirePath))()
-  mediator.loadedControllerInstances[controllerRequirePath] = instance
+  # (Lazy) Loading of collections identical to the require() function
+  loadedCollectionInstances: {}
+  requireCollection: (collectionRequirePath, fetchAfterCreation) ->
+    fetchAfterCreation ?= true
 
-  return instance
+    if collectionRequirePath of @loadedCollectionInstances
+      return @loadedCollectionInstances[collectionRequirePath]
 
-module.exports = mediator
+    if not /^collections\//.test(collectionRequirePath)
+      throw 'Use mediator.requireCollection() as you would use require()'
+
+    instance = new (require(collectionRequirePath))()
+    @loadedCollectionInstances[collectionRequirePath] = instance
+
+    if fetchAfterCreation
+      match = /\/([a-z]+)$/.exec(collectionRequirePath)
+      if match is null
+        throw 'Assertion failed: Controller path must end with [a-z]+'
+
+      collectionNameLower = match[1]
+      instance.fetchLocal()
+      @trigger('collection-fetched-after-creation', collectionNameLower, instance)
+
+    return instance
+
+  loadedServiceInstances: {}
+  registeredServices: {}
+
+  # Use overwrite parameter for mockups
+  registerService: (serviceName, requirePath, overwrite) ->
+    overwrite ?= false
+
+    if serviceName of @registeredServices and not overwrite
+      throw "Cannot register service #{serviceName} twice"
+
+    @registeredServices[serviceName] = requirePath
+
+  requireService: (serviceName) ->
+    if serviceName of @loadedServiceInstances
+      return @loadedServiceInstances[serviceName]
+
+    if not /^[a-zA-Z]+$/.test(serviceName)
+      throw 'Service name must match [a-zA-Z]+'
+
+    if serviceName not of @registeredServices
+      throw "Service #{serviceName} not registered"
+
+    instance = new (require(@registeredServices[serviceName]))()
+    @loadedServiceInstances[serviceName] = instance
+
+    return instance
+
+module.exports = new Mediator()

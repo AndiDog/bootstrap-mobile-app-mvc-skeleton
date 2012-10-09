@@ -1,23 +1,23 @@
 # Base class for all controllers.
-module.exports = class Controller extends Backbone.Router
-  getCurrentPageId: ->
-    return $('[data-role="page"]').attr('id')
+module.exports = class Controller
+  constructor: ->
+    console.log("Constructing controller #{@constructor.name}")
 
-  render: (id, view, options) ->
-    view.render()
+    router = require('lib/navigation/router')
+    for key, value of @routes
+      # value is a method name
+      controllerMethod = this[value]
 
-    # If the template already defines a JQM page, use it
-    existingPage = view.$el.find('[data-role="page"]')
+      if not controllerMethod
+        throw "Controller #{@constructor.name} does not have a method #{value} (route '#{key}')"
 
-    if existingPage.length > 1
-      throw 'Expected exactly 0 or 1 JQM pages'
-    else if existingPage.length is 0
-      view.$el.attr('data-role', 'page')
-      existingPage = view.$el
+      router.addRoute(key, _.bind(controllerMethod, this))
 
-    existingPage.attr('id', id)
+    @initialize()
 
-    $('body').append(view.$el)
+  initialize: ->
+    console.log("Initializing controller #{@constructor.name}")
 
-    settings = $.extend({transition: 'slide', changeHash: false}, options)
-    $.mobile.changePage(existingPage, settings)
+  render: (view) ->
+    # This will return the view again
+    return view.render()
