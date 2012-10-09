@@ -66,8 +66,8 @@ Templates for unit tests are important to me and will be added when I have time.
 ## Other
 Versions of software the skeleton uses:
 
-* jQuery 1.8.2 (you may be able to simply replace it by the more lightweight Zepto.js library)
-* Backbone 0.9.2
+* jQuery 1.8.2
+* Backbone 0.9.2 (only event system, rest stripped out)
 * Underscore 1.3.3
 * jQuery Mobile 1.2.0 (with default theme)
 * i18next 1.5.7 (for translations)
