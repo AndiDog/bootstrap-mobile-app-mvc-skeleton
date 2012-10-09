@@ -14,7 +14,8 @@ Clone this repo or download the ZIP file (you won't need the history). Installin
 site of Brunch](http://brunch.io).
 
 ## License
-[Public domain](http://creativecommons.org/publicdomain/zero/1.0/) – use it however you want.
+[Public domain](http://creativecommons.org/publicdomain/zero/1.0/) – use it however you want. Exceptions are files that
+explicitly state (or are obviously under) another license.
 
 ## Overview
 

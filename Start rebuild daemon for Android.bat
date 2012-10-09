@@ -1,0 +1,1 @@
+@rebuild-daemon.py --target android --debug

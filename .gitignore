@@ -9,6 +9,7 @@
 *.vi
 *~
 *.sass-cache
+*.autogen.*
 
 # OS or Editor folders
 .DS_Store
