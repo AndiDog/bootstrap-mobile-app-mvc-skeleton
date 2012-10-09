@@ -12,7 +12,7 @@ exports.config =
           'vendor/scripts/console-helper.js',
           'vendor/scripts/jquery-1.8.2.min.js',
           'vendor/scripts/underscore-1.3.3.js',
-          'vendor/scripts/backbone-0.9.2.js',
+          'vendor/scripts/backbone-0.9.2-only-events.js',
           'vendor/scripts/jqm-routing-patch.js',
           'vendor/scripts/jquery.mobile-1.2.0.min.js'
         ]
