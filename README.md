@@ -70,3 +70,4 @@ Versions of software the skeleton uses:
 * Backbone 0.9.2
 * Underscore 1.3.3
 * jQuery Mobile 1.2.0 (with default theme)
+* i18next 1.5.7 (for translations)

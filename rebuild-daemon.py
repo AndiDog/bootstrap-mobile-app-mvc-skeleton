@@ -32,7 +32,7 @@ import traceback
 from subprocess import Popen
 
 cwd = os.path.abspath(os.path.dirname(__file__))
-assert(all(os.path.exists(os.path.join(cwd, dirName)) for dirName in ("src", "android", "ios", "extra_assets")))
+assert(all(os.path.exists(os.path.join(cwd, dirName)) for dirName in ("src", "android", "ios", "extra_assets", "i18n")))
 
 parser = OptionParser()
 parser.add_option("--target", default=None, help="Target platform", metavar="android|ios|web")
@@ -68,6 +68,14 @@ def copy_build_output(friendlyPlatformName, platformName, outputPathList):
         dir_util.copy_tree(extra_assets_directory,
                            output_directory,
                            update=False)
+
+    # i18n directory copied as "i18n" folder to work with i18next directory structure defined in application.coffee
+    # (see also http://jamuhl.github.com/i18next/)
+    if not os.path.isdir(os.path.join(output_directory, "i18n")):
+        os.mkdir(os.path.join(output_directory, "i18n"))
+    dir_util.copy_tree(os.path.join(cwd, "i18n"),
+                       os.path.join(output_directory, "i18n"),
+                       update=True)
 
 
 def copy_build_output_to_android_project():
@@ -175,7 +183,7 @@ try:
     while True:
         if time.time() - last_filenames_reload > 20:
             filenames = []
-            for root, unused_dirnames, foundFilenames in chain(os.walk("src"), os.walk("extra_assets")):
+            for root, unused_dirnames, foundFilenames in chain(os.walk("src"), os.walk("extra_assets"), os.walk("i18n")):
                 for filename in foundFilenames:
                     filename = os.path.join(root, filename)
                     if os.path.isfile(filename) and filename_filter(filename):

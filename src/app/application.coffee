@@ -3,6 +3,7 @@ Application =
     # Expose global 'hist' object for navigation purposes
     window.hist = require('lib/navigation/history')
 
+    @initTranslations()
     @initControllers()
     @initNavigation()
 
@@ -31,6 +32,20 @@ Application =
 
     # Prefetch other tabs
     hist.prefetch('route-for-settings', 'tab-settings')
+
+  initTranslations: ->
+    # TODO: put logic here to decide on the language
+    $.i18n.init({
+      lng: 'en',
+      fallbackLng: 'en',
+      ns: 'translation',
+      useLocalStorage: false,
+      debug: true,
+      resGetPath: 'i18n/__lng__/__ns__.json',
+      getAsync: false})
+
+    # Underscore.js already uses '_', so make translation a global 't()' function
+    window.t = $.t
 
   # Since the History class only handles "queues" and itself does not have a notion of "tabs", we add this logic
   # ourselves. This way, the History class remains with a very minimal purpose :)

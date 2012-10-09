@@ -111,7 +111,6 @@ module.exports = class View
     console.log("View class #{@constructor.name} does not overwrite template method")
 
   translate: ->
-    # You may want to comment this in if you use the i18next library (very recommended, see
+    # Use i18next library to translate any HTML elements marked with the data-i18n attribute (see
     # http://jamuhl.github.com/i18next/)
-    #@$el.i18n()
-    return
+    @$el.i18n()
