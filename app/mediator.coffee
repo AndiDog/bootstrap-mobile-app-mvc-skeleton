@@ -31,9 +31,7 @@ class Mediator
 
   # (Lazy) Loading of collections identical to the require() function
   loadedCollectionInstances: {}
-  requireCollection: (collectionRequirePath, fetchAfterCreation) ->
-    fetchAfterCreation ?= true
-
+  requireCollection: (collectionRequirePath, fetchAfterCreation=true) ->
     if collectionRequirePath of @loadedCollectionInstances
       return @loadedCollectionInstances[collectionRequirePath]
 
@@ -58,9 +56,7 @@ class Mediator
   registeredServices: {}
 
   # Use overwrite parameter for mockups
-  registerService: (serviceName, requirePath, overwrite) ->
-    overwrite ?= false
-
+  registerService: (serviceName, requirePath, overwrite=false) ->
     if serviceName of @registeredServices and not overwrite
       throw "Cannot register service #{serviceName} twice"
 
