@@ -1,0 +1,1 @@
+window.appTarget = 'ios';

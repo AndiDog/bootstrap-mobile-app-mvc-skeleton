@@ -7,6 +7,8 @@ Application =
     @initControllers()
     @initNavigation()
 
+    @initWithPhoneGap()
+
     # Freeze the object
     Object.freeze? this
 
@@ -47,6 +49,24 @@ Application =
     # Underscore.js already uses '_', so make translation a global 't()' function
     window.t = $.t
 
+  initWithPhoneGap: ->
+    document.addEventListener 'deviceready', (=>
+      console.log('PhoneGap ready')
+      mediator = require('mediator')
+
+      crossPlatform = require('lib/cross_platform')
+
+      if crossPlatform.isAndroid()
+        actionBarSherlockTabBar = cordova.require('cordova/plugin/actionBarSherlockTabBar')
+        actionBarSherlockTabBar.setTabSelectedListener (tabTag) ->
+          mediator.trigger('tab-changed', tabTag)
+      # endif Android
+
+      setTimeout (->
+        navigator.splashscreen.hide()
+      ), 300
+    ), false
+
   # Since the History class only handles "queues" and itself does not have a notion of "tabs", we add this logic
   # ourselves. This way, the History class remains with a very minimal purpose :)
   onTabChanged: (tabTag) ->
@@ -72,17 +92,21 @@ Application =
       'tab-home': 0
       'tab-settings': 1
 
-    settings = {transition: 'slide', changeHash: false, reverse: tabOrder[tabTag] < tabOrder[previousTabTag]}
-    $.mobile.changePage(existingPage, settings)
-
     webTabBars = $('[data-id="web-target-toolbar"]')
     # TODO: Still doesn't deselect the previous tab, very unnerving
     webTabBars.removeClass('ui-btn-active')
     webTabBars.find('a[data-tab="' + tabTag + '"]').addClass('ui-btn-active')
 
-    hist.setCurrentQueueName(tabTag)
+    settings = {transition: 'slide', changeHash: false, reverse: tabOrder[tabTag] < tabOrder[previousTabTag]}
 
-    # TODO: This was in the old tab handling mechanism after $.mobile.changePage - needed?
-    #tabPage.trigger('create')
+    # Transition is strange on Android (tested both 2.3.3 and 4.1) - screen blinks one or two times (maybe related to
+    # jQM). Maybe someone else wants to try with this block commented out and report if it works.
+    crossPlatform = require('lib/cross_platform')
+    if crossPlatform.isAndroid()
+      settings.transition = 'none'
+
+    $.mobile.changePage(existingPage, settings)
+
+    hist.setCurrentQueueName(tabTag)
 
 module.exports = Application

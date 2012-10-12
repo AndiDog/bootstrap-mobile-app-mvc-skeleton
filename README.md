@@ -71,3 +71,21 @@ Versions of software the skeleton uses:
 * Underscore 1.3.3
 * jQuery Mobile 1.2.0 (with default theme)
 * i18next 1.5.7 (for translations)
+
+## Building
+
+### Web application
+Run `rebuild-daemon.py --target=web --debug` and the app will be built in the folder `src\public`. The scripts
+`Start development server.*` serve this folder if the right tools are installed (take a look inside the scripts, Python
+and Twisted on Windows, for example). Of course you can serve it using your own web server instead.
+
+### Android app
+Import the project in `android` and all projects in `dependencies/android` into your Eclipse workspace. Open the
+properties of the "Mobile Skeleton" project and check whether the builder "Force rebuild Mobile Skeleton" is configured
+correctly.
+
+Run `rebuild-daemon.py --target=android --debug` and the app will be rebuilt on any changes. Then simply start the app
+from Eclipse.
+
+### iOS app
+TODO ;)
