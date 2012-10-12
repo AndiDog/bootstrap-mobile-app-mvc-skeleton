@@ -5,6 +5,12 @@ class History
     @currentQueueName = null
     @queues = {}
 
+  canPop: (queueName=null) ->
+    queueName ?= @currentQueueName
+
+    queue = @queues[queueName]
+    return queue.length > 1
+
   getCurrentQueueName: -> @currentQueueName
 
   getLastQueueEntry: (queueName) ->

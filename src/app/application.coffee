@@ -60,6 +60,18 @@ Application =
         actionBarSherlockTabBar = cordova.require('cordova/plugin/actionBarSherlockTabBar')
         actionBarSherlockTabBar.setTabSelectedListener (tabTag) ->
           mediator.trigger('tab-changed', tabTag)
+
+        document.addEventListener('backbutton', (e) ->
+          console.log('backbuttonpress')
+
+          e.preventDefault()
+
+          # Exit if back button is pressed on primary screen
+          if hist.canPop()
+            hist.pop()
+          else
+            navigator.app.exitApp();
+        , false)
       # endif Android
 
       setTimeout (->
