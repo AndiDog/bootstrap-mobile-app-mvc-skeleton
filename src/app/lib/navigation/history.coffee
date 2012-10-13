@@ -110,7 +110,7 @@ class History
 
     queue.push(queueEntry)
 
-    require('mediator').trigger 'must-load-fragment', fragment, queueName, (view) =>
+    mediator.trigger 'must-load-fragment', fragment, queueName, (view) =>
       el = view.getHtmlElement()
       el.attr('data-queue', queueName)
       el.attr('data-queue-entry-depth', queueEntryDepth)

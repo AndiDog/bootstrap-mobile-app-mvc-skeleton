@@ -17,7 +17,6 @@ module.exports = class HomeController extends Controller
     @render(@view)
 
     @view.findHtmlElement('#create-user-button').click ->
-      mediator = require('mediator')
       usersCollection = mediator.requireCollection('collections/users')
 
       # If you take a look at the implementation of mediator.requireCollection, you will see that the collection is

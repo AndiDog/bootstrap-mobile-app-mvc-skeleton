@@ -10,7 +10,6 @@ class Router
     @routes = {}
 
     # This class handles page loading which is triggered by hist.push, for example
-    mediator = require('mediator')
     mediator.subscribe 'must-load-fragment', (fragment, queueName, onSuccess) =>
       view = @renderRoute(fragment)
 

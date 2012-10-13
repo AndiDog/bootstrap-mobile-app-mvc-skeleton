@@ -84,15 +84,15 @@ module.exports = class View
       html += "<div data-role='footer' data-id='web-target-toolbar' data-position='fixed'>
                    <div data-role='navbar'>
                        <ul>
-                           <li><a #{if tabTag is 'tab-home' then 'class="ui-btn-active ui-state-persist"' else ''} onclick='javascript:require(\"mediator\").trigger(\"tab-changed\", \"tab-home\");return false;'>Home</a></li>
-                           <li><a #{if tabTag is 'tab-settings' then 'class="ui-btn-active ui-state-persist"' else ''} onclick='javascript:require(\"mediator\").trigger(\"tab-changed\", \"tab-settings\");return false;'>Settings</a></li>
+                           <li><a #{if tabTag is 'tab-home' then 'class="ui-btn-active ui-state-persist"' else ''} onclick='javascript:mediator.trigger(\"tab-changed\", \"tab-home\");return false;'>Home</a></li>
+                           <li><a #{if tabTag is 'tab-settings' then 'class="ui-btn-active ui-state-persist"' else ''} onclick='javascript:mediator.trigger(\"tab-changed\", \"tab-settings\");return false;'>Settings</a></li>
                        </ul>
                    </div>
                </div>
                <script>
                    function webTabChange(tabTag)
                    {
-                       require('mediator').trigger('tab-changed', tabTag)
+                       mediator.trigger('tab-changed', tabTag)
                    }
                </script>"
 

@@ -3,6 +3,9 @@ Application =
     # Expose global 'hist' object for navigation purposes
     window.hist = require('lib/navigation/history')
 
+    # Expose mediator globally because it is needed quite often
+    window.mediator = require('mediator')
+
     @initTranslations()
     @initControllers()
     @initNavigation()
@@ -16,7 +19,6 @@ Application =
     # Instantiate the controllers that may be needed at application startup. You can as well just load all of them if
     # you wish. Since controllers register routes in their constructor, a controller must be loaded before a certain
     # route is accessed.
-    mediator = require('mediator')
     mediator.requireController('controllers/home')
     mediator.requireController('controllers/settings')
 
@@ -26,7 +28,6 @@ Application =
     hist.registerQueue('tab-settings')
     hist.setCurrentQueueName('tab-home')
 
-    mediator = require('mediator')
     mediator.subscribe('tab-changed', (tabTag) => @onTabChanged(tabTag))
 
     # Load first page (note: first parameter is the fragment, e.g. 'home' in 'http://localhost/#home')
@@ -52,7 +53,6 @@ Application =
   initWithPhoneGap: ->
     document.addEventListener 'deviceready', (=>
       console.log('PhoneGap ready')
-      mediator = require('mediator')
 
       crossPlatform = require('lib/cross_platform')
 
