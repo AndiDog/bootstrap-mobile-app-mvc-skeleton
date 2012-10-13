@@ -17,6 +17,8 @@ site of Brunch](http://brunch.io).
 [Public domain](http://creativecommons.org/publicdomain/zero/1.0/) – use it however you want. Exceptions are files that
 explicitly state (or are obviously under) another license.
 
+iOS tab icons taken from the wonderful [iconza](http://www.iconza.com/) icon set.
+
 ## Overview
 
 TODO: update this

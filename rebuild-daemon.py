@@ -83,7 +83,7 @@ def copy_build_output_to_android_project():
 
 
 def copy_build_output_to_ios_project():
-    copy_build_output("iOS", "ios", ("ios", "MobileSkeleton", "www"))
+    copy_build_output("iOS", "ios", ("ios", "www"))
 
 
 def copy_build_output_to_web_project():

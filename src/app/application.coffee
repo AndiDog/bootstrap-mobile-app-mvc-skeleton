@@ -73,6 +73,24 @@ Application =
             navigator.app.exitApp();
         , false)
       # endif Android
+      else if crossPlatform.isiOS()
+        console.log('iOS platform!')
+        window.addEventListener('resize', (->
+          plugins.tabBar.resize()
+        ), false)
+
+        tabChanged = (tabTag) ->
+          mediator.trigger('tab-changed', tabTag)
+
+        plugins.tabBar.init()
+        plugins.tabBar.create()
+        plugins.tabBar.createItem('tab-home', t('tab-home'), '/www/tab-home.png', {onSelect: tabChanged})
+        plugins.tabBar.createItem('tab-settings', t('tab-settings'), '/www/tab-settings.png', {onSelect: tabChanged})
+
+        plugins.tabBar.show()
+        plugins.tabBar.showItems('tab-home', 'tab-settings')
+        plugins.tabBar.selectItem('tab-home')
+      # endif iOS
 
       setTimeout (->
         navigator.splashscreen.hide()
