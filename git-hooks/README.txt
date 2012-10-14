@@ -1,0 +1,1 @@
+Copy to .git/hooks if you want.
