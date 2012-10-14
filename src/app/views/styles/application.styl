@@ -1,26 +1,21 @@
-// This is all commented out because jQuery Mobile's CSS is used, but if you want you can use Stylus as well.
+$sidebar-width = 72pt
+$sidebar-gradient-start = #555
+$sidebar-gradient-end = #777
 
+div.sidebar
+  position: absolute
+  overflow: hidden
+  left: 0
+  top: 0
+  bottom: 0
+  width: $sidebar-width
+  background: gradient(linear, left top, left bottom, from($sidebar-gradient-start ), to($sidebar-gradient-end))
+  background: -webkit-gradient(linear, left top, left bottom, from($sidebar-gradient-start ), to($sidebar-gradient-end))
+  border-right: 1px solid gray
 
-// nib is a powerful lib for stylus that provides cross-browser css3 mixins.
-// No more vendor prefixes. http://visionmedia.github.com/nib/
-//@import 'nib'
-
-// Apply a natural box layout model to all elements.
-// http://paulirish.com/2012/box-sizing-border-box-ftw/
-//*
-//  box-sizing: border-box
-//
-//#home-view
-//  width: 480px
-//  margin: 0 auto
-//
-//h1
-//  padding-left: 138px
-//  margin-bottom: 0.5em
-//  font-size: 5em
-//  color: #fff
-//  border-radius: 5px
-//  background-color: #91a2c0
-//  background-image: url('http://brunch.io/images/brunch.png')
-//  background-repeat: no-repeat
-//  background-position: 2px
+div.sidebar-main
+  position: absolute
+  left: $sidebar-width
+  top: 0
+  bottom: 0
+  right: 0

@@ -2,6 +2,12 @@ crossPlatform = require('lib/cross_platform')
 
 # Base class for all views.
 module.exports = class View
+  # Override with true to be notified when the screen size changes between tablet and phone, or the aspect ratio changes
+  # between portrait and landscape. Do not change this value at runtime.
+  #
+  # See also onScreenSizeChanged.
+  needsScreenSizeEvents: false
+
   afterRender: ->
     # Turn it into a jQM page
     # If the template already defines a JQM page, use it
@@ -50,6 +56,10 @@ module.exports = class View
   # May be overridden
   # Called after page was created in DOM but before jQM enhancements
   onPageCreate: ->
+    if @needsScreenSizeEvents
+      crossPlatform = require('lib/cross_platform')
+      crossPlatform.addScreenSizeChangeCallback(this, (crossPlatform) => @onScreenSizeChanged(crossPlatform))
+
     console.log("View #{@constructor.name}: onPageCreate")
     return
 
@@ -60,7 +70,15 @@ module.exports = class View
 
   # May be overridden
   onPageRemove: ->
+    if @needsScreenSizeEvents
+      crossPlatform.removeScreenSizeChangeCallback(this)
+
     console.log("View #{@constructor.name}: onPageRemove")
+    return
+
+  # Will only be called if @needsScreenSizeEvents is true. Use crossPlatform (instance of 'lib/cross_platform') to
+  # determine the current size and aspect ratio.
+  onScreenSizeChanged: (crossPlatform) ->
     return
 
   render: ->
