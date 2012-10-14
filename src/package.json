@@ -29,6 +29,6 @@
   },
   "devDependencies": {
     "mocha": "0.14.0",
-    "expect.js": "0.1.2"
+    "chai": ">= 1.3"
   }
 }

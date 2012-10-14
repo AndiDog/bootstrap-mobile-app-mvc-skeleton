@@ -62,3 +62,7 @@ exports.config =
   # Note: This doesn't actually seem to work as described in Brunch's documentation. rebuild-daemon.py uses the '-m'
   #       parameter instead
   minify: not DEBUG
+
+if DEBUG
+  exports.config.files.javascripts.joinTo['test/javascripts/test.js'] = /^test(\/|\\)(?!vendor)/
+  exports.config.files.javascripts.joinTo['test/javascripts/test-vendor.js'] = /^test(\/|\\)(?=vendor)/

@@ -1,0 +1,1 @@
+At the moment, this Cordova file is just here to make unit tests work (fails if that JS file is not found).

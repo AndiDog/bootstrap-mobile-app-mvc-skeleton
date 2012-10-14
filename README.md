@@ -62,9 +62,6 @@ modules, it would be loaded instantly instead.
 
 This all will generate `public/` (by default) directory when `brunch build` or `brunch watch` is executed.
 
-## What's missing?
-Templates for unit tests are important to me and will be added when I have time.
-
 ## Other
 Versions of software the skeleton uses:
 
@@ -90,4 +87,13 @@ Run `rebuild-daemon.py --target=android --debug` and the app will be rebuilt on 
 from Eclipse.
 
 ### iOS app
-TODO ;)
+Update the CordovaLib project reference using `update_cordova_subproject path/to/MobileSkeleton.xcodeproj`.
+
+Remaining instructions: TODO ;)
+
+## Unit testing
+Install jsdom by executing `npm install jsdom` in the `src` directory. That will try to install contextify as well which requires a binary module. For Windows, you can find binaries [here](https://github.com/AndiDog/contextify-binaries) or you can try to compile them yourself (npm will try it for you).
+
+If you get an error like `TypeError: Cannot call method 'querySelectorAll' of undefined`, contextify is missing from your `node_modules` folder.
+
+All test specs must have a filename like `src/test/view_test.coffee`, note that `view.coffee` won't work.
