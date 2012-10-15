@@ -92,8 +92,13 @@ Update the CordovaLib project reference using `update_cordova_subproject path/to
 Remaining instructions: TODO ;)
 
 ## Unit testing
-Install jsdom by executing `npm install jsdom` in the `src` directory. That will try to install contextify as well which requires a binary module. For Windows, you can find binaries [here](https://github.com/AndiDog/contextify-binaries) or you can try to compile them yourself (npm will try it for you).
+Install jsdom by executing `npm install jsdom` in the `src` directory. That will try to install contextify as well which
+requires a binary module. For Windows, you can find binaries [here](https://github.com/AndiDog/contextify-binaries) or
+you can try to compile them yourself (npm will try it for you). If you want to use the binaries, first run `npm install
+contextify` to install its dependencies (e.g. "bindings" library) and then copy over the binaries to the `node_modules`
+folder.
 
-If you get an error like `TypeError: Cannot call method 'querySelectorAll' of undefined`, contextify is missing from your `node_modules` folder.
+If you get an error like `TypeError: Cannot call method 'querySelectorAll' of undefined`, contextify is missing from
+your `node_modules` folder.
 
 All test specs must have a filename like `src/test/view_test.coffee`, note that `view.coffee` won't work.
