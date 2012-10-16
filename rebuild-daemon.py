@@ -30,6 +30,10 @@ import sys
 import time
 import traceback
 from subprocess import Popen
+try:
+    import gntp.notifier
+except ImportError:
+    gntp = None
 
 cwd = os.path.abspath(os.path.dirname(__file__))
 assert(all(os.path.exists(os.path.join(cwd, dirName)) for dirName in ("src", "android", "ios", "extra_assets", "i18n")))
@@ -118,6 +122,47 @@ def get_target_specific_config_filename(target):
     return os.path.join(cwd, "src", "config-%s.autogen.coffee" % target)
 
 
+def notify_error():
+    if gntp is None:
+        return
+
+    growl.notify(
+        noteType='error',
+        title='BUILD FAILED!',
+        description='',
+        icon='http://i.imgur.com/yYlIE.png',
+        sticky=False,
+        priority=1
+    )
+
+
+def notify_register():
+    if gntp is None:
+        return
+
+    global growl
+    growl = gntp.notifier.GrowlNotifier(
+        applicationName='Rebuild daemon',
+        notifications=('success', 'error'),
+        defaultNotifications=('success', 'error')
+    )
+    growl.register()
+
+
+def notify_success():
+    if gntp is None:
+        return
+
+    growl.notify(
+        noteType='success',
+        title='Build succeeded',
+        description='',
+        icon='http://i.imgur.com/TBvmb.png',
+        sticky=False,
+        priority=-1,
+    )
+
+
 def rebuild():
     try:
         print("%s: Rebuilding..." % format_date(time.time()))
@@ -155,17 +200,21 @@ def rebuild():
         else:
             raise AssertionError()
     except Exception as e:
+        notify_error()
         print("%s: Failed to rebuild: %s" % (format_date(time.time()), e))
         return False
     except:
         print("%s: Quitting, rebuild might be inconsistent" % format_date(time.time()))
         raise
     else:
+        notify_success()
         print("%s: Finished rebuilding" % format_date(time.time()))
         return True
 
 
 try:
+    notify_register()
+
     last_filenames_reload = -999999
     last_force_rebuild_attempt = -999999
     last_max_modification_time = -999999
