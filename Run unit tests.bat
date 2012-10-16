@@ -2,7 +2,7 @@
 if not exist src\config-web.autogen.coffee goto confignotfound
 
 cd src
-call brunch test -c config-web.autogen.coffee
+call brunch test -c config-web.autogen.coffee %*
 cd ..
 
 goto end
