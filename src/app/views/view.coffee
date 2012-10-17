@@ -1,5 +1,8 @@
 crossPlatform = require('lib/cross_platform')
 
+# Ensure template handlers are loaded
+require('views/handlebars_helpers')
+
 # Base class for all views.
 module.exports = class View
   # Override with true to be notified when the screen size changes between tablet and phone, or the aspect ratio changes
@@ -19,12 +22,8 @@ module.exports = class View
       if @$el.length isnt 1
         throw "Template of #{@constructor.name} must have a top-level element (usually a DIV)"
 
-      @$el.attr('data-role', 'page')
       existingPage = @$el
-
-    # Default to theme A, must be applied before page gets enhanced by jQM
-    if not existingPage.attr('data-theme')
-      existingPage.attr('data-theme', 'a')
+      existingPage.addClass('page')
 
     @translate()
 
@@ -91,28 +90,6 @@ module.exports = class View
       break
 
     html = @template(viewData)
-
-    if crossPlatform.isWeb()
-      # Get the currently selected tab
-      tabTag = hist.getCurrentQueueName()
-
-      # Not the best way to add a tab bar, but it works somehow. The currently selected tab is not always correct,
-      # though :( (TODO). This also only works if the template does not contain a DIV with data-role="page" yet because
-      # else the appended part is not displayed.
-      html += "<div data-role='footer' data-id='web-target-toolbar' data-position='fixed'>
-                   <div data-role='navbar'>
-                       <ul>
-                           <li><a #{if tabTag is 'tab-home' then 'class="ui-btn-active ui-state-persist"' else ''} onclick='javascript:mediator.trigger(\"tab-changed\", \"tab-home\");return false;'>Home</a></li>
-                           <li><a #{if tabTag is 'tab-settings' then 'class="ui-btn-active ui-state-persist"' else ''} onclick='javascript:mediator.trigger(\"tab-changed\", \"tab-settings\");return false;'>Settings</a></li>
-                       </ul>
-                   </div>
-               </div>
-               <script>
-                   function webTabChange(tabTag)
-                   {
-                       mediator.trigger('tab-changed', tabTag)
-                   }
-               </script>"
 
     @$el = $(document.createElement('div'))
     @$el.html(html)

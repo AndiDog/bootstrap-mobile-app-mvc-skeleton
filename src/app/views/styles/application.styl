@@ -1,6 +1,19 @@
-$sidebar-width = 72pt
-$sidebar-gradient-start = #555
-$sidebar-gradient-end = #777
+@import 'nib'
+
+html
+  height: 100%
+
+body
+  height: 99.9999%
+  //background: linear-gradient(top, white, black) !important
+  overflow-x: hidden
+
+  // Fix problem with jittering scroll axis (and thus wrong positioning on x axis) during slidedown/slideup transitions
+  overflow-y: scroll
+
+$sidebar-width = 100pt
+$sidebar-gradient-start = #efefef
+$sidebar-gradient-end = #fff
 
 div.sidebar
   position: absolute
@@ -19,3 +32,49 @@ div.sidebar-main
   top: 0
   bottom: 0
   right: 0
+
+.page-container
+  position: absolute
+  left: 0
+  top: 0
+  right: 0
+  bottom: 0
+  z-index: 0
+
+body.web-target .page-container
+  // Top padding because of tab bar
+  top: 45px
+
+.page
+  width: 100%
+  height: 100%
+  position: absolute
+  left: 0
+  top: 0
+  display: none
+
+.active-page
+  display: block !important
+
+// Changes to Bootstrap
+
+.navbar
+  z-index: 1
+
+.container
+  // Ensure some padding on very small screens
+  padding-left: 0.85em
+  padding-right: 0.85em
+  box-sizing(border-box)
+
+  padding-top: 0.6em
+
+.nav-list > .active > a,
+.nav-list > .active > a:hover
+  // Replace default blue
+  background-color: #858585
+
+@media (max-width: 400px)
+  // Navigation bar will (web target only) change to two rows if the window is too small
+  body.web-target .page-container
+    top: 85px // instead of 45px (see above)

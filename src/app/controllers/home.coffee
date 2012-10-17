@@ -13,7 +13,7 @@ module.exports = class HomeController extends Controller
     #mediator.requireController('controllers/another')
 
   index: ->
-    @view.setViewData({someViewData: 42})
+    @view.setViewData({someViewData: 42, someList: ['a', 'b', 'c']})
     @render(@view)
 
     @view.findHtmlElement('#create-user-button').click ->

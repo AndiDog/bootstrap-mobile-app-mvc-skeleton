@@ -1,21 +1,15 @@
-<!-- No DIV with data-role="page" required. It is created automatically by View.afterRender if necessary. -->
-<!--<div data-role="page">-->
-    <!--
-        The data-id attribute persists the header toolbar. The same data-id is used in the "some" template, so switching
-        between this and the "some" page does not animate the toolbar.
-    -->
-
-
-    <div data-role="content">
-        <p>Here's the view data: someViewData={{ someViewData }}</p>
-        <p><a href="#" data-role="button" data-inline="true" id="create-user-button">Create and store user<br/>(check console log!)</a></p>
-        <p>Here's some translated string using the data-i18n attribute: <span data-i18n="translated-text">...this should be replaced...</span></p>
-
-        <!-- Android only:
-        <p>
-            <a href="#" data-role="button" data-mini="true" onclick="cordova.require('cordova/plugin/actionBarSherlockTabBar').hide();return false;">hide tab bar</a>
-            <a href="#" data-role="button" data-mini="true" onclick="cordova.require('cordova/plugin/actionBarSherlockTabBar').show();return false;">show tab bar</a>
-        </p>
-        -->
+<div class="container">
+    <p>Here's the view data: someViewData={{ someViewData }}</p>
+    <p>
+        <button class="btn" id="create-user-button">Create and store user<br/>(check console log!)</button>
+    </p>
+    <p>
+        Here's some translated string using the data-i18n attribute:
+        <span data-i18n="translated-text">...this should be replaced...</span>
+    </p>
+    <div>
+        {{#list someList}}
+            {{this}}
+        {{/list}}
     </div>
-<!--</div>-->
+</div>

@@ -36,6 +36,33 @@ Application =
     # Prefetch other tabs
     hist.prefetch('route-for-settings', 'tab-settings')
 
+    crossPlatform = require('lib/cross_platform')
+
+    if crossPlatform.isWeb()
+      # Get the currently selected tab
+      tabTag = hist.getCurrentQueueName()
+
+      $(document.body).addClass('web-target')
+      $(document.body).append($('<div/>').addClass('navbar').html(
+        """
+        <div class="navbar-inner">
+          <a class="brand">MobileSkeleton</a>
+          <ul class="nav">
+            <li id="tab-indicator-tab-home"#{if tabTag is 'tab-home' then ' class="active"' else ''}><a href="#" onclick='javascript:webTabChange(\"tab-home\");return false;'>Home</a></li>
+            <li id="tab-indicator-tab-settings"#{if tabTag is 'tab-settings' then ' class="active"' else ''}><a href="#" onclick='javascript:webTabChange(\"tab-settings\");return false;'>Settings</a></li>
+          </ul>
+        </div>
+        <script>
+          function webTabChange(tabTag)
+          {
+            $('body > div.navbar .nav > li').removeClass('active')
+            $('body > div.navbar #tab-indicator-' + tabTag).addClass('active')
+            mediator.trigger('tab-changed', tabTag)
+          }
+        </script>
+        """
+      ))
+
   initTranslations: ->
     # TODO: put logic here to decide on the language
     $.i18n.init({
@@ -108,35 +135,12 @@ Application =
       console.log("Tab already active: #{tabTag}")
       return
 
-    existingPages = $('[data-queue="' + tabTag + '"][data-role="page"]')
-
-    if existingPages.length is 0
-      throw "No prefetched page on tab #{tabTag}"
-
-    existingPage = hist.getLastQueueEntry(tabTag).el
-
-    if not existingPage
-      throw "No page loaded for tab #{tabTag}"
-
     tabOrder =
       'tab-home': 0
       'tab-settings': 1
 
-    webTabBars = $('[data-id="web-target-toolbar"]')
-    # TODO: Still doesn't deselect the previous tab, very unnerving
-    webTabBars.removeClass('ui-btn-active')
-    webTabBars.find('a[data-tab="' + tabTag + '"]').addClass('ui-btn-active')
-
     settings = {transition: 'slide', changeHash: false, reverse: tabOrder[tabTag] < tabOrder[previousTabTag]}
 
-    # Transition is strange on Android (tested both 2.3.3 and 4.1) - screen blinks one or two times (maybe related to
-    # jQM). Maybe someone else wants to try with this block commented out and report if it works.
-    crossPlatform = require('lib/cross_platform')
-    if crossPlatform.isAndroid()
-      settings.transition = 'none'
-
-    $.mobile.changePage(existingPage, settings)
-
-    hist.setCurrentQueueName(tabTag)
+    hist.switchQueue(tabTag, settings)
 
 module.exports = Application

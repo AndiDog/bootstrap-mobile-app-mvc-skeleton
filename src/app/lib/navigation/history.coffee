@@ -1,15 +1,37 @@
-# Handles history of loaded jQM pages in one or more "queues" and correct insertion/switches of pages in the DOM.
+# Handles history of loaded pages in one or more "queues" and correct insertion/switches of pages in the DOM.
 # One queue could be one tab, for example.
 class History
+  defaultTransitionDuration: 500
+
   constructor: ->
     @currentQueueName = null
     @queues = {}
+
+  _afterTransition: ->
+    window.scrollTo(0, 0)
 
   canPop: (queueName=null) ->
     queueName ?= @currentQueueName
 
     queue = @queues[queueName]
     return queue.length > 1
+
+  _findViewForElement: (htmlEl) ->
+    if htmlEl.jquery
+      throw 'Must pass pure HTML element'
+
+    hasQueueEntries = false
+
+    for queueName, queue of @queues
+      hasQueueEntries ||= queue.length isnt 0
+      if queue.length isnt 0 and queue[queue.length-1].el[0] is htmlEl
+        return queue[queue.length-1].view
+      else if queue.length > 1 and queue[queue.length-2].el[0] is htmlEl
+        # When a view was pushed, the sought view may be at second level
+        return queue[queue.length-2].view
+
+    console.error("View for element #{htmlEl} not found #{hasQueueEntries}")
+    return null
 
   getCurrentQueueName: -> @currentQueueName
 
@@ -45,6 +67,11 @@ class History
 
     setTimeout (->
       # Unload popped view from DOM
+      try
+        queueEntryToRemove.view.onPageRemove()
+      catch e
+        console.error("Error in onPageRemove: #{e}")
+
       queueEntryToRemove.el.remove()
     ), 3000
 
@@ -112,13 +139,20 @@ class History
 
     mediator.trigger 'must-load-fragment', fragment, queueName, (view) =>
       el = view.getHtmlElement()
+
+      # Add debugging attributes
       el.attr('data-queue', queueName)
       el.attr('data-queue-entry-depth', queueEntryDepth)
+
       queueEntry.el = el
       queueEntry.view = view
 
       setTimeout (=>
-        $('body').append(el)
+        $('body > .page-container').append(el)
+        try
+          queueEntry.view.onPageCreate()
+        catch e
+          console.error("Error in onPageCreate: #{e}")
 
         if @currentQueueName is queueName
           @_switchTo(el, queueEntryDepth, options)
@@ -143,21 +177,32 @@ class History
           @push(fragment, {queueName: queueName, replace: true})
           return
 
+  # Sets current queue name without any DOM changes
   setCurrentQueueName: (queueName) ->
     if queueName not of @queues
       throw "Queue #{queueName} unregistered"
 
     @currentQueueName = queueName
 
+  # Transitions to another queue
+  switchQueue: (queueName, options={}) ->
+    if @currentQueueName is queueName
+      console.warn("Same-queue transition #{queueName}")
+      return
+
+    toQueue = @queues[queueName]
+    if toQueue.length is 0
+      throw "No (prefetched) page in queue #{queueName}"
+
+    toPage = toQueue.slice(-1)[0].el
+    queueEntryDepth = toQueue.length
+
+    @_switchTo(toPage, queueEntryDepth, options)
+    @currentQueueName = queueName
+
   _switchTo: (page, queueEntryDepth, options={}) ->
     if not page
-      throw 'page is undefined, must be a jQM page'
-
-    if page.attr('data-role') isnt 'page'
-      jQMPages = page.find('[data-role="page"]')
-      if jQMPages.length isnt 1
-        throw 'page does not contain any jQM page (with attribute data-role=page)'
-      page = jQMPages
+      throw 'page is undefined'
 
     defaultTransition = 'slide'
     if queueEntryDepth is 0
@@ -166,11 +211,96 @@ class History
       defaultTransition = 'fade'
 
     settings = $.extend({transition: defaultTransition, changeHash: false}, options)
-    $.mobile.changePage(page, settings)
 
-    # Ensure jQM enhancements
-    page.trigger('create')
+    fromPage = $('body > .page-container > .active-page') # may be empty at first call
+    fromView = if fromPage.length is 0 then null else @_findViewForElement(fromPage[0])
+    toView = @_findViewForElement(page[0])
+
+    try
+      fromView?.onPageHide()
+    catch e
+      console.error("Error in onPageHide: #{e}")
+
+    try
+      toView?.onPageBeforeShow()
+    catch e
+      console.error("Error in onPageBeforeShow: #{e}")
+
+    fromPage.each (el) ->
+      if page[0] is el
+        throw 'Assertion error: Trying to switch to self'
+
+    if page.hasClass('active-page')
+      # This can only happen if the user clicks fast enough to trigger a switch when another one is still running (i.e.
+      # an animation is active). Stop it first.
+      $('body > .page-container > .page').stop()
+
+    switch settings.transition
+      when 'none' then @_transitionNone(fromPage, page, settings)
+      when 'fade' then @_transitionFade(fromPage, page, settings)
+      when 'slide' then @_transitionSlide(fromPage, page, settings)
+      when 'slidedown' then @_transitionSlideDown(fromPage, page, settings)
+      else console.error("Unknown transition type '#{settings.transition}'")
 
     # We don't keep track of the location hash, but here would be the place to change it
+
+  _transitionNone: (fromPage, toPage, options) ->
+    width = window.innerWidth
+
+    fromPage.removeClass('active-page')
+    fromPage.css('left', -width)
+    fromPage.css('opacity', 0)
+
+    toPage.addClass('active-page')
+    toPage.css('left', 0)
+    toPage.css('opacity', 1)
+
+    @_afterTransition()
+
+  _transitionFade: (fromPage, toPage, options) ->
+    settings = $.extend({duration: @defaultTransitionDuration}, options)
+
+    if fromPage
+      fromPage.stop().animate {opacity: 0}, settings.duration/2, ->
+        fromPage.removeClass('active-page')
+        fromPage.css('left', '0')
+        fromPage.css('opacity', '1')
+
+    toPage.css('left', 0)
+    toPage.css('opacity', 0)
+    toPage.addClass('active-page')
+    toPage.stop().animate({opacity: 1}, settings.duration, => @_afterTransition())
+
+  _transitionSlide: (fromPage, toPage, options) ->
+    settings = $.extend({duration: @defaultTransitionDuration}, options)
+    width = window.innerWidth
+
+    if fromPage
+      fromPage.stop().animate {left: (if settings.reverse then 1 else -1) * width, opacity: 0}, settings.duration, ->
+        fromPage.removeClass('active-page')
+        fromPage.css('left', '0')
+        fromPage.css('opacity', '1')
+
+    toPage.css('left', (if settings.reverse then -1 else 1) * width)
+    toPage.css('opacity', 0)
+    toPage.addClass('active-page')
+    toPage.stop().animate({left: 0, opacity: 1}, settings.duration, => @_afterTransition())
+
+  _transitionSlideDown: (fromPage, toPage, options) ->
+    settings = $.extend({duration: @defaultTransitionDuration}, options)
+    height = window.innerHeight
+
+    if fromPage
+      fromPage.stop().animate {opacity: 0}, settings.duration/2
+      fromPage.animate {top: (if settings.reverse then -1 else 1) * height}, settings.duration, ->
+        fromPage.removeClass('active-page')
+        fromPage.css('top', '0')
+        fromPage.css('opacity', '1')
+
+    toPage.css('opacity', '0')
+    toPage.css('top', (if settings.reverse then 1 else -1) * height)
+    toPage.addClass('active-page')
+    toPage.stop().animate {top: 0, opacity: 1}, settings.duration, =>
+      @_afterTransition()
 
 module.exports = new History()

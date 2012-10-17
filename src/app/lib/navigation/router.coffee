@@ -32,13 +32,8 @@ class Router
     # Call the controller's method here (which must return a view)
     view = @routes[pattern]()
 
-    existingPage = view.findHtmlElement('[data-role="page"]')
-
-    if existingPage.length > 1
-      throw 'Expected exactly 0 or 1 jQM pages in rendered view'
-    else if existingPage.length is 0
-      existingPage = view.getHtmlElement()
-      existingPage.attr('data-role', 'page')
+    if not view.getHtmlElement()
+      throw 'View did not create an HTML element'
 
     return view
 
