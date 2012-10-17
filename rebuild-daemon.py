@@ -137,16 +137,22 @@ def notify_error():
 
 
 def notify_register():
+    global gntp
+    global growl
+
     if gntp is None:
         return
 
-    global growl
-    growl = gntp.notifier.GrowlNotifier(
-        applicationName='Rebuild daemon',
-        notifications=('success', 'error'),
-        defaultNotifications=('success', 'error')
-    )
-    growl.register()
+    try:
+        growl = gntp.notifier.GrowlNotifier(
+            applicationName='Rebuild daemon',
+            notifications=('success', 'error'),
+            defaultNotifications=('success', 'error')
+        )
+        growl.register()
+    except Exception:
+        print("Could not connect to Growl, you won't see notifications")
+        gntp = None
 
 
 def notify_success():
