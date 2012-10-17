@@ -46,13 +46,13 @@ module.exports = class SidebarView extends View
       mainView.addClass('sidebar-main')
       return
 
-    @sidebar = $(@renderSidebar())
+    @sidebar = $(document.createElement('div')).html(@renderSidebar())
     @sidebar.addClass('sidebar')
     mainView.addClass('sidebar-main')
 
     @sidebar.css('display', 'block')
     mainView.css('display', 'block')
 
-    $('body').append(@sidebar)
+    @$el.append(@sidebar)
 
     @sidebarLoaded = true
