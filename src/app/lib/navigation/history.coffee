@@ -162,7 +162,7 @@ class History
     @queues[queueName] = []
 
   replace: (fragment, options={}) ->
-    @push(fragment, $.extend(options, {replace: true}))
+    @push(fragment, $.extend({}, options, {replace: true}))
 
   replaceView: (view, fragment) ->
     if not view.findHtmlElement
