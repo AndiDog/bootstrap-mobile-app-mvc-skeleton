@@ -51,13 +51,13 @@ if target not in ("android", "ios", "web"):
     raise AssertionError("Invalid target specified")
 
 
-def copy_build_output(friendlyPlatformName, platformName, outputPathList):
-    if outputPathList is not None:
+def copy_build_output(friendly_platform_name, platform_name, output_path_list):
+    if output_path_list is not None:
         # Assume that the parent directory of "www" exists
-        os.path.join(cwd, *(outputPathList[:-1]))
+        os.path.join(cwd, *(output_path_list[:-1]))
 
-        print("%s: Copying to %s project..." % (format_date(time.time()), friendlyPlatformName))
-        output_directory = os.path.join(cwd, *outputPathList)
+        print("%s: Copying to %s project..." % (format_date(time.time()), friendly_platform_name))
+        output_directory = os.path.join(cwd, *output_path_list)
 
         if os.path.exists(output_directory):
             shutil.rmtree(output_directory)
@@ -66,7 +66,7 @@ def copy_build_output(friendlyPlatformName, platformName, outputPathList):
     else:
         output_directory = os.path.join(cwd, "src", "public")
 
-    extra_assets_directory = os.path.join(cwd, "extra_assets", platformName)
+    extra_assets_directory = os.path.join(cwd, "extra_assets", platform_name)
 
     if os.path.exists(extra_assets_directory):
         dir_util.copy_tree(extra_assets_directory,
@@ -110,8 +110,8 @@ def create_target_specific_config_files():
                    target_variables +
                    template[template.index("<MAGIC>\n") + 8:])
 
-        with open(get_target_specific_config_filename(target), "wb") as outFile:
-            outFile.write(content.encode("utf-8"))
+        with open(get_target_specific_config_filename(target), "wb") as out_file:
+            out_file.write(content.encode("utf-8"))
 
 
 def format_date(timestamp):
