@@ -126,14 +126,17 @@ def notify_error():
     if gntp is None:
         return
 
-    growl.notify(
-        noteType='error',
-        title='BUILD FAILED!',
-        description='',
-        icon='http://i.imgur.com/yYlIE.png',
-        sticky=False,
-        priority=1
-    )
+    try:
+        growl.notify(
+            noteType='error',
+            title='BUILD FAILED!',
+            description='',
+            icon='http://i.imgur.com/yYlIE.png',
+            sticky=False,
+            priority=1
+        )
+    except Exception:
+        print("Could not show Growl success notification")
 
 
 def notify_register():
@@ -159,14 +162,17 @@ def notify_success():
     if gntp is None:
         return
 
-    growl.notify(
-        noteType='success',
-        title='Build succeeded',
-        description='',
-        icon='http://i.imgur.com/TBvmb.png',
-        sticky=False,
-        priority=-1,
-    )
+    try:
+        growl.notify(
+            noteType='success',
+            title='Build succeeded',
+            description='',
+            icon='http://i.imgur.com/TBvmb.png',
+            sticky=False,
+            priority=-1,
+        )
+    except Exception:
+        print("Could not show Growl success notification")
 
 
 def rebuild():
