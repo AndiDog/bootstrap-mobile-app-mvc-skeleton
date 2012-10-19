@@ -16,6 +16,15 @@ class History
     queue = @queues[queueName]
     return queue.length > 1
 
+  _findActivePageAndView: (ifInQueueNamed) ->
+    fromPage = $('body > .page-container > .active-page[data-queue="' + ifInQueueNamed + '"]')
+    if fromPage.length is 0
+      return [null, null]
+    else
+      fromView = @_findViewForElement(fromPage[0])
+
+      return [fromPage, fromView]
+
   _findViewForElement: (htmlEl) ->
     if htmlEl.jquery
       throw 'Must pass pure HTML element'
@@ -30,7 +39,7 @@ class History
         # When a view was pushed, the sought view may be at second level
         return queue[queue.length-2].view
 
-    console.error("View for element #{htmlEl} not found #{hasQueueEntries}")
+    console.error("View for element #{htmlEl} not found (hasQueueEntries=#{hasQueueEntries})")
     return null
 
   getCurrentQueueName: -> @currentQueueName
@@ -51,6 +60,9 @@ class History
     if queue.length <= 1
       throw "Cannot pop a view from queue #{queueName} because there is only #{queue.length} view left"
 
+    # Must find previous view before it may get removed in the code below
+    fromPageAndView = @_findActivePageAndView(queueName)
+
     queueEntryDepth = queue.length - 1
 
     queueEntryToRemove = queue.pop()
@@ -63,7 +75,11 @@ class History
     if 'transition' of defaultOptions and 'reverse' of defaultOptions
       defaultOptions.reverse = not defaultOptions.reverse
 
-    @_switchTo(queueEntryToShowNow.el, queueEntryDepth, $.extend({reverse: true}, defaultOptions, options))
+    @_switchTo(queueEntryToShowNow.el,
+               queueEntryDepth,
+               $.extend({reverse: true}, defaultOptions, options),
+               fromPageAndView[0],
+               fromPageAndView[1])
 
     setTimeout (->
       # Unload popped view from DOM
@@ -121,7 +137,13 @@ class History
       console.log("Not replacing fragment #{fragment}, already loaded")
       return
 
+    # See docs of _switchTo parameters
+    fromPageAndView = [null, null]
+
     if options.replace
+      # Must determine previous page and view before queue is cleared.
+      fromPageAndView = @_findActivePageAndView(queueName)
+
       # Clear queue
       queue = []
       @queues[queueName] = queue
@@ -140,8 +162,9 @@ class History
     mediator.trigger 'must-load-fragment', fragment, queueName, (view) =>
       el = view.getHtmlElement()
 
-      # Add debugging attributes
       el.attr('data-queue', queueName)
+
+      # Add debugging attribute
       el.attr('data-queue-entry-depth', queueEntryDepth)
 
       queueEntry.el = el
@@ -155,7 +178,7 @@ class History
           console.error("Error in onPageCreate: #{e}")
 
         if @currentQueueName is queueName
-          @_switchTo(el, queueEntryDepth, options)
+          @_switchTo(el, queueEntryDepth, options, fromPageAndView[0], fromPageAndView[1])
       ), 0
 
   registerQueue: (queueName) ->
@@ -200,9 +223,16 @@ class History
     @_switchTo(toPage, queueEntryDepth, options)
     @currentQueueName = queueName
 
-  _switchTo: (page, queueEntryDepth, options={}) ->
+  # Parameters fromPage/fromView must be null if the active view (the one which should be hidden) should be searched by
+  # this method (and not predetermined earlier). This is important for replace/pop because the previous view may not be
+  # found anymore since it has been popped from its queue.
+  _switchTo: (page, queueEntryDepth, options={}, fromPage=null, fromView=null) ->
     if not page
       throw 'page is undefined'
+    if fromView? and not fromPage?
+      # Assumption: fromView != null ==> fromPage != null (because if an active DOM element fromPage was found, fromView
+      #             can be found or not)
+      throw 'Assertion error'
 
     defaultTransition = 'slide'
     if queueEntryDepth is 0
@@ -212,8 +242,10 @@ class History
 
     settings = $.extend({transition: defaultTransition, changeHash: false}, options)
 
-    fromPage = $('body > .page-container > .active-page') # may be empty at first call
-    fromView = if fromPage.length is 0 then null else @_findViewForElement(fromPage[0])
+    if not fromView?
+      fromPage = $('body > .page-container > .active-page') # may be empty at first call
+      fromView = if fromPage.length is 0 then null else @_findViewForElement(fromPage[0])
+
     toView = @_findViewForElement(page[0])
 
     try
