@@ -32,6 +32,9 @@ class Router
     # Call the controller's method here (which must return a view)
     view = @routes[pattern]()
 
+    if not view
+      throw "Controller did not return a view for route '#{pattern}'"
+
     if not view.getHtmlElement()
       throw 'View did not create an HTML element'
 
