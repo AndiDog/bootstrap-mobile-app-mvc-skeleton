@@ -53,7 +53,8 @@ module.exports = class View
     return
 
   # May be overridden
-  # Called after page was created in DOM but before jQM enhancements
+  # Called after page was created in DOM. This is the earliest point when jQuery queries on the document will find the
+  # rendered view!
   onPageCreate: ->
     if @needsScreenSizeEvents
       crossPlatform = require('lib/cross_platform')
