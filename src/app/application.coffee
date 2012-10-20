@@ -30,7 +30,8 @@ Application =
 
     mediator.subscribe('tab-changed', (tabTag) => @onTabChanged(tabTag))
 
-    # Load first page (note: first parameter is the fragment, e.g. 'home' in 'http://localhost/#home')
+    # Load first page (note: first parameter is the fragment, e.g. 'home' in 'http://localhost/#home', however the
+    # location.hash value is not actually changed in this skeleton)
     hist.push('route-for-home', {queueName: 'tab-home'})
 
     # Prefetch other tabs
