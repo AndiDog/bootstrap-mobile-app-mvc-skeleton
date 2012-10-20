@@ -101,7 +101,6 @@ Application =
         , false)
       # endif Android
       else if crossPlatform.isiOS()
-        console.log('iOS platform!')
         window.addEventListener('resize', (->
           plugins.tabBar.resize()
         ), false)
