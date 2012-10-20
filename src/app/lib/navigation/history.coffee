@@ -147,6 +147,14 @@ class History
     queueEntryDepth = queue.length
     queueEntry = {fragment: fragment, options: {}}
 
+    # Scenario: Main screen --slide--> choose date --replace,default(fade)--> results screen
+    # In that case, when the results screen calls pop, we want to use the slide transition!
+    if options.replace
+      if 'transition' of queueEntryToRemove.options
+        queueEntry.options.transition = queueEntryToRemove.options.transition
+      if 'reverse' of queueEntryToRemove.options
+        queueEntry.options.reverse = queueEntryToRemove.options.reverse
+
     # Store other parameters if existent, may be necessary later on (e.g. for popping)
     if 'transition' of options
       queueEntry.options.transition = options.transition
