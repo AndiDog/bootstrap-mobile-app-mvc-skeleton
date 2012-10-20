@@ -81,7 +81,7 @@ class History
                fromPageAndView[0],
                fromPageAndView[1])
 
-    setTimeout (=> @_unloadQueueEntry()), 3000
+    setTimeout (=> @_unloadQueueEntry(queueEntryToRemove)), 3000
 
   popView: (view) ->
     if not view.findHtmlElement
