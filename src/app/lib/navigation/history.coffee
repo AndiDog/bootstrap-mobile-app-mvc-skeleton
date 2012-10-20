@@ -81,15 +81,7 @@ class History
                fromPageAndView[0],
                fromPageAndView[1])
 
-    setTimeout (->
-      # Unload popped view from DOM
-      try
-        queueEntryToRemove.view.onPageRemove()
-      catch e
-        console.error("Error in onPageRemove: #{e}")
-
-      queueEntryToRemove.el.remove()
-    ), 3000
+    setTimeout (=> @_unloadQueueEntry()), 3000
 
   popView: (view) ->
     if not view.findHtmlElement
@@ -141,12 +133,16 @@ class History
     fromPageAndView = [null, null]
 
     if options.replace
-      # Must determine previous page and view before queue is cleared.
+      # Must determine previous page and view before top queue entry is removed
       fromPageAndView = @_findActivePageAndView(queueName)
 
-      # Clear queue
-      queue = []
-      @queues[queueName] = queue
+      if queue.length is 0
+        throw new Error 'Queue is empty, cannot replace any view'
+
+      # Remove queue entry that is about to be replaced
+      queueEntryToRemove = queue.pop()
+    else
+      queueEntryToRemove = null
 
     queueEntryDepth = queue.length
     queueEntry = {fragment: fragment, options: {}}
@@ -179,6 +175,9 @@ class History
 
         if @currentQueueName is queueName
           @_switchTo(el, queueEntryDepth, options, fromPageAndView[0], fromPageAndView[1])
+
+        if queueEntryToRemove?
+          setTimeout (=> @_unloadQueueEntry(queueEntryToRemove)), 5000
       ), 0
 
   registerQueue: (queueName) ->
@@ -334,5 +333,14 @@ class History
     toPage.addClass('active-page')
     toPage.stop().animate {top: 0, opacity: 1}, settings.duration, =>
       @_afterTransition()
+
+  _unloadQueueEntry: (queueEntry) ->
+    # Unload popped view from DOM
+    try
+      queueEntry.view.onPageRemove()
+    catch e
+      console.error("Error in onPageRemove: #{e}")
+
+    queueEntry.el.remove()
 
 module.exports = new History()
