@@ -69,6 +69,11 @@ body.web-target .page-container
 
   padding-top: 0.6em
 
+  // Bootstrap Responsive uses media queries to set a fixed width in pixels for .container DIVs, but since that may be
+  // larger than the available space (e.g. if a .container is part of the right panel when a sidebar is shown), restrict
+  // it to 100%.
+  max-width: 100%
+
 .nav-list > .active > a,
 .nav-list > .active > a:hover
   // Replace default blue
