@@ -7,6 +7,12 @@ SEPARATOR = '-'
 #
 # TODO: methods to find a model instance by comparing attributes e.g. usersCollection.findOne((user) -> user.get('username') is 'admin')
 module.exports = class Collection
+  # Overwrite this with the collection name (used for local storage), e.g. "UsersCollection"
+  name: null
+
+  # Overwrite this with the model class used to instantiate model instances from raw attributes
+  model: null
+
   constructor: ->
     @fetched = false
     @toRemove = []
