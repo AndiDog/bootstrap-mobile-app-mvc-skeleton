@@ -55,6 +55,8 @@ class Mediator
   loadedServiceInstances: {}
   registeredServices: {}
 
+  hasService: (serviceName) -> serviceName of @registeredServices
+
   # Use overwrite parameter for mockups
   registerService: (serviceName, requirePath, overwrite=false) ->
     if serviceName of @registeredServices and not overwrite
