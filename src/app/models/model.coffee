@@ -19,6 +19,11 @@ module.exports = class Model
 
     return hash
 
+  # Loading from saved attributes (e.g. from localStorage) is different because some model classes may not allow an 'id'
+  # attribute to be passed to the constructor (e.g. if it's automatically generated). Therefore, this class method can
+  # be used to overwrite the validation behavior.
+  @fromSavedAttributes: (attributes) -> new @(attributes)
+
   get: (attributeName) ->
     @attributes[attributeName]
 

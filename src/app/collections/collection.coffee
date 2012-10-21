@@ -66,7 +66,7 @@ module.exports = class Collection
 
         modelAttributes = JSON.parse(jsonRecord)
         modelAttributes.id = parseInt(id, 10)
-        model = new @model(modelAttributes)
+        model = @model.fromSavedAttributes(modelAttributes)
         @models.push(model)
 
         fetchedIds[id] = true
