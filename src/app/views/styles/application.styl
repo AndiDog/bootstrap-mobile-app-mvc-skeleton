@@ -5,11 +5,11 @@ html
 
 body
   height: 99.9999%
-  overflow-x: hidden
   background: linear-gradient(top, #fff, #d2d2d2) fixed !important
 
-  // Fix problem with jittering scroll axis (and thus wrong positioning on x axis) during slidedown/slideup transitions
-  overflow-y: scroll
+  // Overflow handled by .page so that navigation bar (web target only) remains static at the top and only the content
+  // is scrolled.
+  overflow: hidden
 
 $sidebar-width = 100pt
 $sidebar-gradient-start = #efefef
@@ -32,6 +32,7 @@ div.sidebar-main
   top: 0
   bottom: 0
   right: 0
+  overflow-y: auto
 
 .page-container
   position: absolute
@@ -52,6 +53,7 @@ body.web-target .page-container
   left: 0
   top: 0
   display: none
+  overflow-y: auto
 
 .active-page
   display: block !important
