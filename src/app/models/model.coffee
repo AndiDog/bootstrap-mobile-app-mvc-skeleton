@@ -1,7 +1,7 @@
 # Base class for all models.
 module.exports = class Model
   constructor: (attributes) ->
-    @attributes = _.extend({}, _.clone(@defaults ? {}), attributes)
+    @attributes = _.extend({}, @defaults ? {}, attributes)
 
   calculateHash: (attributeNames...) ->
     l = []
