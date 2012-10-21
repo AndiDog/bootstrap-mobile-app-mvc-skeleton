@@ -1,3 +1,6 @@
+# Rename this file to rebuild-daemon.py if the other one does not work or you don't want to install its dependency
+# (watchdog). Since this one doesn't use any sophisticated filesystem watching techniques, the other script is preferred.
+
 """
 Start this to automatically build the app using Brunch (not using Brunch's watching, but using own file change
 recognition of any file in the "src" folder) and (optionally) to copy it to the Android project. This only triggers
@@ -10,9 +13,12 @@ For iOS, the "--target=ios" parameter copies the result to the "www" folder in t
 
 @author:
     Andreas Sommer
+@license:
+    New BSD license (http://www.opensource.org/licenses/BSD-3-Clause)
+
+    Downloadable under http://bazaar.launchpad.net/~andidog/dogsync/trunk/view/head:/LICENSE.txt
 @note:
-    Requires the Python package watchdog (install with `pip install watchdog`, see also
-    http://pypi.python.org/pypi/watchdog).
+    Base of the rebuild daemon taken from DogSync and modified
 """
 
 from __future__ import print_function
@@ -22,15 +28,11 @@ from distutils import dir_util
 from itertools import chain
 from optparse import OptionParser
 import os
-import re
 import shutil
 import sys
-import threading
 import time
 import traceback
 from subprocess import Popen
-import watchdog.events
-import watchdog.observers
 try:
     import gntp.notifier
 except ImportError:
@@ -228,75 +230,56 @@ def rebuild():
 try:
     notify_register()
 
-    script_dir = re.sub(r'[\\/]?$', re.escape(os.sep), os.path.dirname(__file__))
+    last_filenames_reload = -999999
+    last_force_rebuild_attempt = -999999
+    last_max_modification_time = -999999
+    filenames = None
 
     def filename_filter(filename):
-        # filename is absolute, make it relative
-        if not filename.startswith(script_dir):
-            raise AssertionError
-
-        filename = filename[len(script_dir):]
-
         return (not filename.startswith(os.path.join("src", "public", "")) and
                 not filename.startswith(os.path.join("src", "node_modules", "")))
 
+    firstTime = True
+    force_rebuild = False
+
     create_target_specific_config_files()
 
-    class EventHandler(watchdog.events.FileSystemEventHandler):
-        def __init__(self, on_change_event):
-            super(watchdog.events.FileSystemEventHandler, self).__init__()
+    while True:
+        if time.time() - last_filenames_reload > 20:
+            filenames = []
+            for root, unused_dirnames, foundFilenames in chain(os.walk("src"), os.walk("extra_assets"), os.walk("i18n")):
+                for filename in foundFilenames:
+                    filename = os.path.join(root, filename)
+                    if os.path.isfile(filename) and filename_filter(filename):
+                        filenames.append(filename)
 
-            self._on_change_event = on_change_event
+            last_filenames_reload = time.time()
 
-        def on_any_event(self, event):
-            if event.is_directory or not filename_filter(event.src_path):
-                return
+        must_rebuild = False
 
-            #print('Changed %s' % event.src_path)
-            self._on_change_event.set()
+        for filename in filenames:
+            try:
+                modification_time = os.stat(filename).st_mtime
+            except os.error:
+                print("Warning: Ignoring exception in os.stat: %s" % traceback.format_exc(), file=sys.stderr)
 
-    def rebuild_thread(event):
-        force_rebuild = True
-        last_force_rebuild_attempt = -999999
+            if modification_time > last_max_modification_time:
+                if not firstTime:
+                    print("%s: Changed %s" % (format_date(time.time()), filename[len("src") + 1:]))
 
-        while True:
+                last_max_modification_time = modification_time
+
+                must_rebuild = True
+
+        if must_rebuild or (force_rebuild and time.time() - last_force_rebuild_attempt > 10):
             if force_rebuild:
-                if time.time() - last_force_rebuild_attempt < 10:
-                    if not event.wait(1):
-                        continue
-                # else rebuild now
-            else:
-                event.wait()
-                event.clear()
-
-                # Triggered by file change, wait a bit longer because multiple files might be changed at once
-                while event.wait(0.125):
-                    event.clear()
+                last_force_rebuild_attempt = time.time()
 
             if rebuild():
                 force_rebuild = False
             else:
                 force_rebuild = True
-                last_force_rebuild_attempt = time.time()
 
-    on_change_event = threading.Event()
-    thread = threading.Thread(target=rebuild_thread, args=(on_change_event,))
-    thread.daemon = True
-    thread.start()
-
-    event_handler = EventHandler(on_change_event)
-    observer = watchdog.observers.Observer()
-    observer.schedule(event_handler, path='src', recursive=True)
-    observer.schedule(event_handler, path='extra_assets', recursive=True)
-    observer.schedule(event_handler, path='i18n', recursive=True)
-    observer.start()
-    try:
-        while True:
-            time.sleep(1.5)
-    except KeyboardInterrupt:
-        print('\nQuit by user.')
-    finally:
-        observer.stop()
-        observer.join()
+        time.sleep(1)
 except KeyboardInterrupt:
     print("\nQuit by user.")
