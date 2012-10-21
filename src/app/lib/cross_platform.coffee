@@ -9,7 +9,7 @@ class CrossPlatform
     return window.appTarget is 'android' or (window.device and device.platform is 'Android')
 
   isiOS: ->
-    return window.appTarget is 'ios' or (window.device and device.platform is 'iPhone' or device.platform is 'iPad')
+    return window.appTarget is 'ios' or (window.device and (device.platform is 'iPhone' or device.platform is 'iPad'))
 
   isWeb: ->
     return window.appTarget is 'web'
