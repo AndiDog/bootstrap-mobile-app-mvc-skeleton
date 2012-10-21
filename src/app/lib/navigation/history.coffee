@@ -45,13 +45,15 @@ class History
 
   getCurrentQueueName: -> @currentQueueName
 
-  getLastQueueEntry: (queueName) ->
+  getLastQueueEntry: (queueName=null, butOne=false) ->
+    queueName ?= @currentQueueName
+
     queue = @queues[queueName]
 
-    if queue.length is 0
+    if queue.length < (if butOne then 2 else 1)
       return null
 
-    return queue.slice(-1)[0]
+    return queue.slice((if butOne then -2 else -1))[0]
 
   # Usually called from within a view template in order to close the current screen (e.g. back button pressed)
   pop: (options={}) ->
@@ -78,6 +80,7 @@ class History
 
     @_switchTo(queueEntryToShowNow.el,
                queueEntryDepth,
+               queueEntryDepth + 1,
                $.extend({reverse: true}, defaultOptions, options),
                fromPageAndView[0],
                fromPageAndView[1])
@@ -145,7 +148,7 @@ class History
     else
       queueEntryToRemove = null
 
-    queueEntryDepth = queue.length
+    queueEntryDepth = queue.length + 1
     queueEntry = {fragment: fragment, options: {}}
 
     # Scenario: Main screen --slide--> choose date --replace,default(fade)--> results screen
@@ -183,7 +186,7 @@ class History
           console.error("Error in onPageCreate: #{e}")
 
         if @currentQueueName is queueName
-          @_switchTo(el, queueEntryDepth, options, fromPageAndView[0], fromPageAndView[1])
+          @_switchTo(el, queueEntryDepth, queueEntryDepth - 1, options, fromPageAndView[0], fromPageAndView[1])
 
         if queueEntryToRemove?
           setTimeout (=> @_unloadQueueEntry(queueEntryToRemove)), 5000
@@ -228,13 +231,15 @@ class History
     toPage = toQueue.slice(-1)[0].el
     queueEntryDepth = toQueue.length
 
-    @_switchTo(toPage, queueEntryDepth, options)
+    @_switchTo(toPage, queueEntryDepth, queueEntryDepth, options)
     @currentQueueName = queueName
 
   # Parameters fromPage/fromView must be null if the active view (the one which should be hidden) should be searched by
   # this method (and not predetermined earlier). This is important for replace/pop because the previous view may not be
   # found anymore since it has been popped from its queue.
-  _switchTo: (page, queueEntryDepth, options={}, fromPage=null, fromView=null) ->
+  # queueEntryDepth represents the number of queue entries the active queue will have after this transition. For example,
+  # if a second view is pushed over the main view, it must be 2.
+  _switchTo: (page, queueEntryDepth, previousQueueEntryDepth, options={}, fromPage=null, fromView=null) ->
     if not page
       throw 'page is undefined'
     if fromView? and not fromPage?
@@ -243,7 +248,8 @@ class History
       throw 'Assertion error'
 
     defaultTransition = 'slide'
-    if queueEntryDepth is 0
+    if queueEntryDepth is 1 and previousQueueEntryDepth is 0
+      # First screen added to queue, do not animate
       defaultTransition = 'none'
     if options.replace
       defaultTransition = 'fade'
