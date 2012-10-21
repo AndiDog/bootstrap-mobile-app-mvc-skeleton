@@ -41,7 +41,7 @@ module.exports = class Collection
     @models.length
 
   fetchLocal: ->
-    if not @fetched?
+    if @fetched is undefined
       throw 'Constructor not called'
     if not @name? or not @model?
       throw 'Must define a name and model class for collection'
@@ -87,7 +87,11 @@ module.exports = class Collection
 
     return null
 
-  getAll: -> @models
+  getAll: ->
+    if @fetched is false
+      throw 'Cannot call getAll(), collection was not fetched yet'
+
+    return @models
 
   save: (model) ->
     if typeof model.get('id') isnt 'number'
@@ -124,6 +128,9 @@ module.exports = class Collection
     @
 
   syncLocal: ->
+    if @fetched is false
+      throw 'Cannot call syncLocal(), collection was not fetched yet'
+
     for id in @toRemove
       localStorage.removeItem(@name + SEPARATOR + id)
 
