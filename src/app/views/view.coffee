@@ -50,7 +50,6 @@ module.exports = class View
   # May be overridden
   onPageBeforeShow: ->
     console.log("View #{@constructor.name}: onPageBeforeShow")
-    return
 
   # May be overridden
   # Called after page was created in DOM. This is the earliest point when jQuery queries on the document will find the
@@ -61,12 +60,10 @@ module.exports = class View
       crossPlatform.addScreenSizeChangeCallback(this, (crossPlatform) => @onScreenSizeChanged(crossPlatform))
 
     console.log("View #{@constructor.name}: onPageCreate")
-    return
 
   # May be overridden
   onPageHide: ->
     console.log("View #{@constructor.name}: onPageHide")
-    return
 
   # May be overridden
   onPageRemove: ->
@@ -74,7 +71,6 @@ module.exports = class View
       crossPlatform.removeScreenSizeChangeCallback(this)
 
     console.log("View #{@constructor.name}: onPageRemove")
-    return
 
   # Will only be called if @needsScreenSizeEvents is true. Use crossPlatform (instance of 'lib/cross_platform') to
   # determine the current size and aspect ratio.
