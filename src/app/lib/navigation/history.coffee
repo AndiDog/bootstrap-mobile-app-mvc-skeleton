@@ -9,6 +9,7 @@ class History
 
   _afterTransition: ->
     window.scrollTo(0, 0)
+    $(':focus').blur()
 
   canPop: (queueName=null) ->
     queueName ?= @currentQueueName
