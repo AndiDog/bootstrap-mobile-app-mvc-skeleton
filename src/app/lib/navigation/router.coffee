@@ -13,8 +13,11 @@ class Router
     mediator.subscribe 'must-load-fragment', (fragment, queueName, onSuccess) =>
       view = @renderRoute(fragment)
 
-      if not view?.getHtmlElement?
+      if 'getHtmlElement' not of view
         throw "No view returned, does controller method return the view? (view=#{view})"
+
+      if not view.getHtmlElement()
+        throw "Controller returned view that is not rendered (view=#{view})"
 
       if onSuccess?
         onSuccess(view)
