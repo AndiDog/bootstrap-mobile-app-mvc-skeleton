@@ -129,7 +129,7 @@ class History
 
     queue = @queues[queueName]
 
-    if queue.length > 0 and queue.slice(-1)[0].fragment is fragment
+    if queue.length > 0 and queue.slice(-1)[0].fragment is fragment and not options.replace
       console.log("Not replacing fragment #{fragment}, already loaded")
       return
 
@@ -167,7 +167,7 @@ class History
 
     queue.push(queueEntry)
 
-    mediator.trigger 'must-load-fragment', fragment, queueName, (view) =>
+    onViewLoaded = (view) =>
       el = view.getHtmlElement()
 
       el.attr('data-queue', queueName)
@@ -192,12 +192,35 @@ class History
           setTimeout (=> @_unloadQueueEntry(queueEntryToRemove)), 5000
       ), 0
 
+    if 'loadedView' of options
+      if not options.loadedView.getHtmlElement()
+        throw "View is not rendered (view=#{options.loadedView})"
+
+      onViewLoaded(options.loadedView)
+    else
+      mediator.trigger('must-load-fragment', fragment, queueName, onViewLoaded)
+
+  # Assumes that view is rendered
+  pushByView: (loadedView, fragment, options={}) ->
+    @push(fragment, $.extend({}, options, {loadedView: loadedView}))
+
   registerQueue: (queueName) ->
     @queues[queueName] = []
 
   replace: (fragment, options={}) ->
     @push(fragment, $.extend({}, options, {replace: true}))
 
+  # Replaces top view by the given view and assigns the fragment to it
+  replaceByView: (loadedView, fragment, options={}) ->
+    if not loadedView.findHtmlElement
+      throw 'Not a view'
+
+    if not fragment
+      throw 'Must specify fragment for loaded view'
+
+    @push(fragment, $.extend({}, options, {loadedView: loadedView, replace: true}))
+
+  # Replaces the specified view by the view loaded using the given fragment
   replaceView: (view, fragment) ->
     if not view.findHtmlElement
       throw 'Not a view'
