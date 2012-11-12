@@ -277,7 +277,7 @@ class History
     if options.replace
       defaultTransition = 'fade'
 
-    settings = $.extend({transition: defaultTransition, changeHash: false}, options)
+    settings = $.extend({transition: defaultTransition}, options)
 
     if not fromView?
       fromPage = $('body > .page-container > .active-page') # may be empty at first call

@@ -139,7 +139,7 @@ Application =
       'tab-home': 0
       'tab-settings': 1
 
-    settings = {transition: 'slide', changeHash: false, reverse: tabOrder[tabTag] < tabOrder[previousTabTag]}
+    settings = {transition: 'slide', reverse: tabOrder[tabTag] < tabOrder[previousTabTag]}
 
     hist.switchQueue(tabTag, settings)
 
