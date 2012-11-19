@@ -165,9 +165,12 @@ class History
     if 'reverse' of options
       queueEntry.options.reverse = options.reverse
 
-    queue.push(queueEntry)
+    currentQueueLength = queue.length
 
     onViewLoaded = (view) =>
+      # Insert at right place
+      queue.splice(currentQueueLength, 0, queueEntry)
+
       el = view.getHtmlElement()
 
       el.attr('data-queue', queueName)
