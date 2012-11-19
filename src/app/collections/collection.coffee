@@ -94,6 +94,9 @@ module.exports = class Collection
     return @models
 
   save: (model) ->
+    if @fetched is false
+      throw 'Cannot call save(), collection was not fetched yet'
+
     if typeof model.get('id') isnt 'number'
       throw "#{@name}.save: Model ID must be a number (is #{model.get('id')})"
 
