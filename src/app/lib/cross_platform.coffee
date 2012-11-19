@@ -19,6 +19,10 @@ class CrossPlatform
   screenSizeChangeCallbacks = null
 
   addScreenSizeChangeCallback: (identifier, callback) ->
+    if not window.matchMedia
+      # enquire.js not loaded because matchMedia is not available, thus size change events not supported
+      return
+
     if not @screenSizeChangeCallbacks
       @screenSizeChangeCallbacks = []
 
@@ -58,6 +62,9 @@ class CrossPlatform
       item[1](this)
 
   removeScreenSizeChangeCallback: (identifier, callback) ->
+    if not window.matchMedia
+      return
+
     found = false
 
     if @screenSizeChangeCallbacks
