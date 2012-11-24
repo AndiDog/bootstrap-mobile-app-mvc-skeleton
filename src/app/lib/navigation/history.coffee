@@ -129,7 +129,7 @@ class History
 
     queue = @queues[queueName]
 
-    if queue.length > 0 and queue.slice(-1)[0].fragment is fragment and not options.replace
+    if fragment and queue.length > 0 and queue.slice(-1)[0].fragment is fragment and not options.replace
       console.log("Not replacing fragment #{fragment}, already loaded")
       return
 
