@@ -1,4 +1,4 @@
-# Brunch skeleton aimed at mobile apps, using CoffeeScript, jQuery Mobile, Backbone, Handlebars, Stylus, MVC pattern
+# Brunch skeleton aimed at mobile apps, using CoffeeScript, Bootstrap, Backbone (only events), Handlebars, Stylus, MVC pattern
 This is a skeleton for [Brunch](http://brunch.io/) based on the work of Paul Millr
 ([simple-coffee-skeleton](https://github.com/brunch/simple-coffee-skeleton)) and my previously released skeleton
 ([jquery-mobile-bootstrap-mvc-skeleton](https://github.com/AndiDog/jquery-mobile-bootstrap-mvc-skeleton)).
@@ -68,7 +68,7 @@ Versions of software the skeleton uses:
 * jQuery 1.8.2
 * Backbone 0.9.2 (only event system, rest stripped out)
 * Underscore 1.3.3
-* jQuery Mobile 1.2.0 (with default theme)
+* Bootstrap 2.1.1 (with default theme)
 * i18next 1.5.7 (for translations)
 
 ## Building
