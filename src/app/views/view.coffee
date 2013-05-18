@@ -12,12 +12,12 @@ module.exports = class View
   needsScreenSizeEvents: false
 
   afterRender: ->
-    # Turn it into a jQM page
-    # If the template already defines a JQM page, use it
+    # Turn it into a page
+    # If the template already defines a page, use it
     existingPage = @$el.find('[data-role="page"]')
 
     if existingPage.length > 1
-      throw 'Expected exactly 0 or 1 JQM pages'
+      throw 'Expected exactly 0 or 1 pages'
     else if existingPage.length is 0
       if @$el.length isnt 1
         throw "Template of #{@constructor.name} must have a top-level element (usually a DIV)"
