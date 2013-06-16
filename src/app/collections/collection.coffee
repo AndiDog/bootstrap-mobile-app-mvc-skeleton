@@ -29,8 +29,8 @@ module.exports = class Collection
       throw 'Cannot call add(), collection was not fetched yet'
 
     id = model.get('id')
-    for model in @models
-      if model.get('id') is id
+    for existingModel in @models
+      if existingModel.get('id') is id
         throw "Cannot add model because one with the same ID #{id} exists already"
 
     @models.push(model)
